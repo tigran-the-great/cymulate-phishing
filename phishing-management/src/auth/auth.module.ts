@@ -12,7 +12,7 @@ dotenv.config();
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET, // test secret
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: "1d" },
     }),
   ],

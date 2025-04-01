@@ -10,7 +10,7 @@ export class PhishingAttempt extends Document {
   status: string;
 
   @Prop()
-  username: string; // Add this
+  username: string;
 }
 
 export const PhishingSchema = SchemaFactory.createForClass(PhishingAttempt);
