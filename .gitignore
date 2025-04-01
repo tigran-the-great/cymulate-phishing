@@ -3,3 +3,5 @@
 /phishing-simulation/node_modules
 /phishing-simulation/dist
 /phishing-management/dist
+/phishing-management/.env
+/phishing-simulation/.env
