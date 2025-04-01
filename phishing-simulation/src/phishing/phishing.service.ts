@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from "@nestjs/common";
-import * as nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { PhishingAttempt } from "./schemas/phishing.schema";
@@ -11,31 +14,53 @@ export class PhishingService {
     private attemptModel: Model<PhishingAttempt>
   ) {}
 
-  async sendEmail(email: string) {
-    const attempt = new this.attemptModel({ email, status: "sent" });
-    await attempt.save();
+  async sendEmail(email: string, userName: string) {
+    try {
+      const attempt = await this.attemptModel.insertOne({
+        email,
+        status: "sent",
+        username: userName,
+      });
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "exampleemali@gmail.com", // testing data update it with real one if you want to test
-        pass: "applicationpassword", // testing data update it with real one if you want to test
-      },
-    });
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
 
-    const phishingLink = `http://localhost:3001/phishing/click/${attempt._id}`;
+      const phishingLink = `http://localhost:3001/phishing/click/${attempt.id}`;
 
-    await transporter.sendMail({
-      from: "exampleemali@gmail.com",
-      to: email,
-      subject: "Security Alert!",
-      html: `<p>Check this out: <a href="${phishingLink}">Click Here</a></p>`,
-    });
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Security Alert!",
+        html: `<p>Check this out: <a href="${phishingLink}">Click Here</a></p>`,
+      });
 
-    return attempt;
+      return attempt;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("SendMail Error:", err.message);
+      } else {
+        console.error("Unknown error sending email");
+      }
+    }
   }
 
   async recordClick(id: string) {
-    return this.attemptModel.findByIdAndUpdate(id, { status: "clicked" });
+    try {
+      const attempt = await this.attemptModel.findByIdAndUpdate(id, {
+        status: "clicked",
+      });
+      return attempt;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("recordClick Error:", error.message);
+      } else {
+        console.error("Unknown error sending email");
+      }
+    }
   }
 }

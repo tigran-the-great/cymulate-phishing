@@ -1,4 +1,4 @@
-import { Controller, Post, Param, Get, Body } from "@nestjs/common";
+import { Controller, Post, Param, Get, Body, Query } from "@nestjs/common";
 import { PhishingService } from "./phishing.service";
 
 @Controller("phishing")
@@ -6,8 +6,11 @@ export class PhishingController {
   constructor(private readonly phishingService: PhishingService) {}
 
   @Post("send")
-  async send(@Body() body: { email: string }) {
-    return this.phishingService.sendEmail(body.email);
+  async send(
+    @Body() body: { email: string },
+    @Query() userDate: { userName: string }
+  ) {
+    return this.phishingService.sendEmail(body.email, userDate.userName);
   }
 
   @Get("click/:id")

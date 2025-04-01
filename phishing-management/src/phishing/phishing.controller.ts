@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Controller, Get, Post, Body, Headers } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
@@ -33,20 +36,11 @@ export class PhishingController {
     if (!user) return { message: "Unauthorized" };
 
     const res: { data: { email: string; status: string } } = await axios.post(
-      "http://localhost:3001/phishing/send",
+      `http://localhost:3001/phishing/send?userName=${user?.username}`,
       {
         email: body.email,
       }
     );
-
-    const { email, status } = res.data;
-
-    const attempt = new this.attemptModel({
-      email,
-      status,
-      username: user?.username, // ← save username from JWT
-    });
-    await attempt.save();
 
     return res.data;
   }
