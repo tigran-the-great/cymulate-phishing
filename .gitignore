@@ -1,0 +1,5 @@
+/frontend/node_modules
+/phishing-management/node_modules
+/phishing-simulation/node_modules
+/phishing-simulation/dist
+/phishing-management/dist
